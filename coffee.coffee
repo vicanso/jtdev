@@ -1,6 +1,7 @@
 coffeeScript = require 'coffee-script'
 async = require 'async'
 path = require 'path'
+jtModule = require 'jtmodule'
 module.exports.parser = (filePath) ->
   (req, res, next) ->
     process.nextTick next
@@ -25,8 +26,8 @@ module.exports.parser = (filePath) ->
         str = Buffer.concat(bufList, bufLength).toString encoding
         file = req.url.substring 0 , req.url.length - ext.length
         # if file != '/base/javascripts/module'
-        moduleStr = "module = GLOBAL_MODULES['#{file}'] = {id : '#{file}'}\nexports = module.exports = {}\n"
-        str = moduleStr + str
+        
+        str = jtModule.defineModule(file) + str
         try
           js = coffeeScript.compile str
         catch err

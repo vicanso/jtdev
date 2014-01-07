@@ -1,11 +1,13 @@
 (function() {
-  var async, coffeeScript, path;
+  var async, coffeeScript, jtModule, path;
 
   coffeeScript = require('coffee-script');
 
   async = require('async');
 
   path = require('path');
+
+  jtModule = require('jtmodule');
 
   module.exports.parser = function(filePath) {
     return function(req, res, next) {
@@ -22,7 +24,7 @@
           return bufLength += chunk.length;
         };
         return res.end = function(chunk, encoding) {
-          var buf, err, file, js, moduleStr, self, str;
+          var buf, file, js, self, str;
           self = this;
           if (Buffer.isBuffer(chunk)) {
             bufList.push(chunk);
@@ -36,12 +38,10 @@
           }
           str = Buffer.concat(bufList, bufLength).toString(encoding);
           file = req.url.substring(0, req.url.length - ext.length);
-          moduleStr = "module = GLOBAL_MODULES['" + file + "'] = {id : '" + file + "'}\nexports = module.exports = {}\n";
-          str = moduleStr + str;
+          str = jtModule.defineModule(file) + str;
           try {
             js = coffeeScript.compile(str);
-          } catch (_error) {
-            err = _error;
+          } catch (err) {
             if (err) {
               throw err;
             }
