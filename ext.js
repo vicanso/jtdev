@@ -1,9 +1,11 @@
 (function() {
-  var convertExts, fs, path;
+  var convertExts, fs, path, url;
 
   path = require('path');
 
   fs = require('fs');
+
+  url = require('url');
 
   convertExts = {
     'js': 'coffee',
@@ -12,8 +14,9 @@
 
   module.exports.converter = function(staticPath) {
     return function(req, res, next) {
-      var destExt, ext, file;
-      file = path.join(staticPath, req.url);
+      var destExt, ext, file, urlInfo;
+      urlInfo = url.parse(req.url);
+      file = path.join(staticPath, urlInfo.pathname);
       ext = path.extname(file).substring(1);
       destExt = convertExts[ext];
       if (destExt) {

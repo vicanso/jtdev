@@ -1,12 +1,14 @@
 path = require 'path'
 fs = require 'fs'
+url = require 'url'
 convertExts = 
   'js' : 'coffee'
   'css' : 'styl'
 
 module.exports.converter = (staticPath) ->
   (req, res, next) ->
-    file = path.join staticPath, req.url
+    urlInfo = url.parse req.url
+    file = path.join staticPath, urlInfo.pathname
     ext = path.extname(file).substring 1
     destExt = convertExts[ext]
     if destExt

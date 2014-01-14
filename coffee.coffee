@@ -1,11 +1,13 @@
 coffeeScript = require 'coffee-script'
 async = require 'async'
 path = require 'path'
-jtModule = require 'jtmodule'
+url = require 'url'
+querystring = require 'querystring'
 module.exports.parser = (filePath) ->
   (req, res, next) ->
     process.nextTick next
-    ext = path.extname req.url
+    urlInfo = url.parse req.url
+    ext = path.extname urlInfo.pathname
     if ext == '.coffee'
       write = res.write
       end = res.end
@@ -23,13 +25,8 @@ module.exports.parser = (filePath) ->
           if !res.headerSent
             end.call self
           return
-        str = Buffer.concat(bufList, bufLength).toString encoding
-        file = req.url.substring 0 , req.url.length - ext.length
-        # if file != '/base/javascripts/module'
-        
-        str = jtModule.defineModule(file) + str
         try
-          js = coffeeScript.compile str
+          js = coffeeScript.compile Buffer.concat(bufList, bufLength).toString encoding
         catch err
           throw err if err
           return

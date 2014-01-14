@@ -1,5 +1,5 @@
 (function() {
-  var async, coffeeScript, jtModule, path;
+  var async, coffeeScript, path, querystring, url;
 
   coffeeScript = require('coffee-script');
 
@@ -7,13 +7,16 @@
 
   path = require('path');
 
-  jtModule = require('jtmodule');
+  url = require('url');
+
+  querystring = require('querystring');
 
   module.exports.parser = function(filePath) {
     return function(req, res, next) {
-      var bufLength, bufList, end, ext, write;
+      var bufLength, bufList, end, ext, urlInfo, write;
       process.nextTick(next);
-      ext = path.extname(req.url);
+      urlInfo = url.parse(req.url);
+      ext = path.extname(urlInfo.pathname);
       if (ext === '.coffee') {
         write = res.write;
         end = res.end;
@@ -24,7 +27,7 @@
           return bufLength += chunk.length;
         };
         return res.end = function(chunk, encoding) {
-          var buf, file, js, self, str;
+          var buf, js, self;
           self = this;
           if (Buffer.isBuffer(chunk)) {
             bufList.push(chunk);
@@ -36,11 +39,8 @@
             }
             return;
           }
-          str = Buffer.concat(bufList, bufLength).toString(encoding);
-          file = req.url.substring(0, req.url.length - ext.length);
-          str = jtModule.defineModule(file) + str;
           try {
-            js = coffeeScript.compile(str);
+            js = coffeeScript.compile(Buffer.concat(bufList, bufLength).toString(encoding));
           } catch (err) {
             if (err) {
               throw err;
