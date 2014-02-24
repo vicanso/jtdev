@@ -1,4 +1,5 @@
 stylus = require 'stylus'
+nib = require 'nib'
 async = require 'async'
 path = require 'path'
 module.exports.parser = (filePath) ->
@@ -26,9 +27,10 @@ module.exports.parser = (filePath) ->
         str = Buffer.concat(bufList, bufLength).toString encoding
         async.waterfall [
           (cbf) ->
-            stylus.render str, {
-              filename : file
-            }, cbf
+            stylus(str).set('filename', file).use(nib()).render cbf
+            # stylus.render str, {
+            #   filename : file
+            # }, cbf
           (css, cbf) ->
             buf = new Buffer css, encoding
             res.header 'Content-Length', buf.length

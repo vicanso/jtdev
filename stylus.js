@@ -1,7 +1,9 @@
 (function() {
-  var async, path, stylus;
+  var async, nib, path, stylus;
 
   stylus = require('stylus');
+
+  nib = require('nib');
 
   async = require('async');
 
@@ -38,9 +40,7 @@
           str = Buffer.concat(bufList, bufLength).toString(encoding);
           return async.waterfall([
             function(cbf) {
-              return stylus.render(str, {
-                filename: file
-              }, cbf);
+              return stylus(str).set('filename', file).use(nib()).render(cbf);
             }, function(css, cbf) {
               var buf;
               buf = new Buffer(css, encoding);
