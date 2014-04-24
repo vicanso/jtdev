@@ -1,5 +1,4 @@
 (function() {
-
   module.exports.coffee = require('./coffee');
 
   module.exports.stylus = require('./stylus');

@@ -1,9 +1,8 @@
 coffeeScript = require 'coffee-script'
-async = require 'async'
 path = require 'path'
 url = require 'url'
 querystring = require 'querystring'
-module.exports.parser = (filePath) ->
+module.exports.parser = ->
   (req, res, next) ->
     process.nextTick next
     urlInfo = url.parse req.url
@@ -22,7 +21,7 @@ module.exports.parser = (filePath) ->
           bufList.push chunk
           bufLength += chunk.length
         if !bufLength
-          if !res.headerSent
+          if !res.headersSent
             end.call self
           return
         try
@@ -35,3 +34,4 @@ module.exports.parser = (filePath) ->
         res.header 'Content-Type', 'application/javascript'
         write.call res, buf
         end.call res
+    return

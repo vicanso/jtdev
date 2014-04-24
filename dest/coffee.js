@@ -1,9 +1,7 @@
 (function() {
-  var async, coffeeScript, path, querystring, url;
+  var coffeeScript, path, querystring, url;
 
   coffeeScript = require('coffee-script');
-
-  async = require('async');
 
   path = require('path');
 
@@ -11,7 +9,7 @@
 
   querystring = require('querystring');
 
-  module.exports.parser = function(filePath) {
+  module.exports.parser = function() {
     return function(req, res, next) {
       var bufLength, bufList, end, ext, urlInfo, write;
       process.nextTick(next);
@@ -26,22 +24,23 @@
           bufList.push(chunk);
           return bufLength += chunk.length;
         };
-        return res.end = function(chunk, encoding) {
-          var buf, js, self;
+        res.end = function(chunk, encoding) {
+          var buf, err, js, self;
           self = this;
           if (Buffer.isBuffer(chunk)) {
             bufList.push(chunk);
             bufLength += chunk.length;
           }
           if (!bufLength) {
-            if (!res.headerSent) {
+            if (!res.headersSent) {
               end.call(self);
             }
             return;
           }
           try {
             js = coffeeScript.compile(Buffer.concat(bufList, bufLength).toString(encoding));
-          } catch (err) {
+          } catch (_error) {
+            err = _error;
             if (err) {
               throw err;
             }

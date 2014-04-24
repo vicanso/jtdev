@@ -1,6 +1,5 @@
 stylus = require 'stylus'
 nib = require 'nib'
-async = require 'async'
 path = require 'path'
 module.exports.parser = (filePath) ->
   (req, res, next) ->
@@ -21,21 +20,15 @@ module.exports.parser = (filePath) ->
           bufList.push chunk
           bufLength += chunk.length
         if !bufLength
-          if !res.headerSent
+          if !res.headersSent
             end.call self
           return
         str = Buffer.concat(bufList, bufLength).toString encoding
-        async.waterfall [
-          (cbf) ->
-            stylus(str).set('filename', file).use(nib()).render cbf
-            # stylus.render str, {
-            #   filename : file
-            # }, cbf
-          (css, cbf) ->
-            buf = new Buffer css, encoding
-            res.header 'Content-Length', buf.length
-            res.header 'Content-Type', 'text/css'
-            write.call res, buf
-            end.call res
-        ], (err) ->
+        stylus(str).set('filename', file).use(nib()).render (err, css) ->
           throw err if err
+          buf = new Buffer css, encoding
+          res.header 'Content-Length', buf.length
+          res.header 'Content-Type', 'text/css'
+          write.call res, buf
+          end.call res
+    return

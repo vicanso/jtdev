@@ -1,11 +1,9 @@
 (function() {
-  var async, nib, path, stylus;
+  var nib, path, stylus;
 
   stylus = require('stylus');
 
   nib = require('nib');
-
-  async = require('async');
 
   path = require('path');
 
@@ -24,7 +22,7 @@
           bufList.push(chunk);
           return bufLength += chunk.length;
         };
-        return res.end = function(chunk, encoding) {
+        res.end = function(chunk, encoding) {
           var self, str;
           self = this;
           if (Buffer.isBuffer(chunk)) {
@@ -32,27 +30,22 @@
             bufLength += chunk.length;
           }
           if (!bufLength) {
-            if (!res.headerSent) {
+            if (!res.headersSent) {
               end.call(self);
             }
             return;
           }
           str = Buffer.concat(bufList, bufLength).toString(encoding);
-          return async.waterfall([
-            function(cbf) {
-              return stylus(str).set('filename', file).use(nib()).render(cbf);
-            }, function(css, cbf) {
-              var buf;
-              buf = new Buffer(css, encoding);
-              res.header('Content-Length', buf.length);
-              res.header('Content-Type', 'text/css');
-              write.call(res, buf);
-              return end.call(res);
-            }
-          ], function(err) {
+          return stylus(str).set('filename', file).use(nib()).render(function(err, css) {
+            var buf;
             if (err) {
               throw err;
             }
+            buf = new Buffer(css, encoding);
+            res.header('Content-Length', buf.length);
+            res.header('Content-Type', 'text/css');
+            write.call(res, buf);
+            return end.call(res);
           });
         };
       }
