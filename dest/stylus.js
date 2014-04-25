@@ -7,13 +7,13 @@
 
   path = require('path');
 
-  module.exports.parser = function(filePath) {
+  module.exports.parser = function(staticPath) {
     return function(req, res, next) {
       var bufLength, bufList, end, ext, file, write;
       process.nextTick(next);
       ext = path.extname(req.url);
       if (ext === '.styl') {
-        file = path.join(filePath, req.url);
+        file = path.join(staticPath, req.url);
         write = res.write;
         end = res.end;
         bufList = [];

@@ -1,12 +1,12 @@
 stylus = require 'stylus'
 nib = require 'nib'
 path = require 'path'
-module.exports.parser = (filePath) ->
+module.exports.parser = (staticPath) ->
   (req, res, next) ->
     process.nextTick next
     ext = path.extname req.url
     if ext == '.styl'
-      file = path.join filePath, req.url
+      file = path.join staticPath, req.url
       write = res.write
       end = res.end
       bufList = []
