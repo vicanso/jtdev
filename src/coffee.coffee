@@ -27,8 +27,10 @@ module.exports.parser = ->
         try
           js = coffeeScript.compile Buffer.concat(bufList, bufLength).toString encoding
         catch err
-          throw err if err
-          return
+          console.error "*****ERROR*****"
+          console.error "file:#{urlInfo.pathname}"
+          console.error "line:#{err.location.first_line}"
+          throw err
         buf = new Buffer js, encoding
         res.header 'Content-Length', buf.length
         res.header 'Content-Type', 'application/javascript'

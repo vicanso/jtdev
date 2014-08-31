@@ -1,5 +1,5 @@
 (function() {
-  var nib, path, stylus;
+  var nib, path, stylus, url;
 
   stylus = require('stylus');
 
@@ -7,11 +7,14 @@
 
   path = require('path');
 
+  url = require('url');
+
   module.exports.parser = function(staticPath) {
     return function(req, res, next) {
-      var bufLength, bufList, end, ext, file, write;
+      var bufLength, bufList, end, ext, file, urlInfo, write;
       process.nextTick(next);
-      ext = path.extname(req.url);
+      urlInfo = url.parse(req.url);
+      ext = path.extname(urlInfo.pathname);
       if (ext === '.styl') {
         file = path.join(staticPath, req.url);
         write = res.write;

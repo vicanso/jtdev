@@ -1,10 +1,12 @@
 stylus = require 'stylus'
 nib = require 'nib'
 path = require 'path'
+url = require 'url'
 module.exports.parser = (staticPath) ->
   (req, res, next) ->
     process.nextTick next
-    ext = path.extname req.url
+    urlInfo = url.parse req.url
+    ext = path.extname urlInfo.pathname
     if ext == '.styl'
       file = path.join staticPath, req.url
       write = res.write

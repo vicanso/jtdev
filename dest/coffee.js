@@ -41,10 +41,10 @@
             js = coffeeScript.compile(Buffer.concat(bufList, bufLength).toString(encoding));
           } catch (_error) {
             err = _error;
-            if (err) {
-              throw err;
-            }
-            return;
+            console.error("*****ERROR*****");
+            console.error("file:" + urlInfo.pathname);
+            console.error("line:" + err.location.first_line);
+            throw err;
           }
           buf = new Buffer(js, encoding);
           res.header('Content-Length', buf.length);
