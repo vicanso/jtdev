@@ -9,7 +9,10 @@
 
   url = require('url');
 
-  module.exports.parser = function(staticPath) {
+  module.exports.parser = function(staticPath, options) {
+    if (options == null) {
+      options = {};
+    }
     return function(req, res, next) {
       var bufLength, bufList, end, ext, file, urlInfo, write;
       process.nextTick(next);
@@ -39,7 +42,7 @@
             return;
           }
           str = Buffer.concat(bufList, bufLength).toString(encoding);
-          return stylus(str).set('filename', file).use(nib()).render(function(err, css) {
+          return stylus(str, options).set('filename', file).use(nib()).render(function(err, css) {
             var buf;
             if (err) {
               throw err;

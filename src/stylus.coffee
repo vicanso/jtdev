@@ -2,7 +2,7 @@ stylus = require 'stylus'
 nib = require 'nib'
 path = require 'path'
 url = require 'url'
-module.exports.parser = (staticPath) ->
+module.exports.parser = (staticPath, options = {}) ->
   (req, res, next) ->
     process.nextTick next
     urlInfo = url.parse req.url
@@ -26,7 +26,7 @@ module.exports.parser = (staticPath) ->
             end.call self
           return
         str = Buffer.concat(bufList, bufLength).toString encoding
-        stylus(str).set('filename', file).use(nib()).render (err, css) ->
+        stylus(str, options).set('filename', file).use(nib()).render (err, css) ->
           throw err if err
           buf = new Buffer css, encoding
           res.header 'Content-Length', buf.length
