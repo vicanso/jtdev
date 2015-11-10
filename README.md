@@ -1,48 +1,52 @@
-# 模块描述
+# compile styls, lesss, jsx, es and so on for dev.
 
-用于在开发中编译coffee、stylus
+## Installation
+
+```bash
+$ npm install jtdev
+```
+
 
 # API
 
-- [coffee parser](#coffeeParser)
-- [ext converter](#extConverter)
-- [stylus parser](#stylusParser)
-
-<a name="coffeeParser" />
-## coffee parser
-### coffeescript的编译器
-
-### 无参数
+## parse static file for dev
 
 ```js
-var jtDev = require('jtdev');
-var app = expresss();
-app.use(jtDev.coffee.parser());
+const serve = require('koa-static');
+const koa = require('koa');
+const app = koa();
+const jtDev = require('jtdev');
+const path = require('path');
+app.use(jtDev.parser(staticFilePath))
+
+app.use(serve(staticFilePath));
+
+app.listen(3000);
+
+console.log('listening on port 3000');
+
 ```
 
 
+## add define function for requirejs 
 
-<a name="extConverter" />
-## ext convert
-### 后缀转换（如请求x.css文件，首先判断x.css是否存在，不存在则将请求文件修改为x.styl，还有.js ---> .coffee）
-
-### staticPath 静态文件的存放目录
 
 ```js
-var jtDev = require('jtdev');
-var app = express();
-app.use(jtDev.ext.converter('/test/statics'));
-```
+const serve = require('koa-static');
+const koa = require('koa');
+const app = koa();
+const jtDev = require('jtdev');
+const path = require('path');
 
+app.use(jtDev.defineWrapper(staticFilePath, {
+	basePath: path.join(staticFilePath, 'components'),
+	except: ['components/widget.js']
+}));
 
-<a name="stylusParser" />
-## stylus parser
-### stylus的编译器
+app.use(serve(staticFilePath));
 
-### staticPath 静态文件的存放目录
+app.listen(3000);
 
-```js
-var jtDev = require('jtdev');
-var app = express();
-app.use(jtDev.stylus.parser('/test/statics'));
+console.log('listening on port 3000');
+
 ```
