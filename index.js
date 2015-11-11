@@ -7,6 +7,7 @@ const jsx = require('./lib/jsx');
 const less = require('./lib/less');
 const stylus = require('./lib/stylus');
 const requirejs = require('./lib/requirejs');
+const util = require('util');
 
 exports.parser = parser;
 exports.defineWrapper = defineWrapper;
@@ -85,11 +86,27 @@ function defineWrapper(staticPath, options) {
 	}
 	let reject;
 	if (options.except) {
-		let files = options.except.map(function(file) {
-			return path.join(staticPath, file);
+		let files = [];
+		let regExpList = [];
+		options.except.forEach(function(file) {
+			if (util.isRegExp(file)) {
+				regExpList.push(file);
+			} else {
+				files.push(path.join(staticPath, file));
+			}
 		});
 		reject = function(file) {
-			return files.indexOf(file) !== -1;
+			let isRejct = files.indexOf(file) !== -1;
+			if (isRejct) {
+				return isRejct;
+			} else {
+				regExpList.forEach(function(reg) {
+					if (!isRejct) {
+						isRejct = reg.test(file);
+					}
+				});
+				return isRejct;
+			}
 		};
 	}
 	return function* requirejsDefineWrapper(next) {

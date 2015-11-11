@@ -30,7 +30,7 @@ function execGenerator(g, arr, v, cb) {
 
 describe('es2015 parse', function() {
 	it('should parse es file success', function(done) {
-		this.timeout(5000);
+		this.timeout(10000);
 		let file = path.join(__dirname, '../files/es2015.js');
 		let g = es2015(file);
 		let originalCode = '\'use strict\';\n\nconst _ = require(\'lodash\');\n\nclass Person {\n\tconstructor(name) {\n\t\tthis.name = name;\n\t}\n}';
