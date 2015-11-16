@@ -8,9 +8,11 @@ const less = require('./lib/less');
 const stylus = require('./lib/stylus');
 const requirejs = require('./lib/requirejs');
 const util = require('util');
+const through = require('through2');
 
 exports.parser = parser;
 exports.defineWrapper = defineWrapper;
+exports.requirejs = requirejsDefine;
 
 function parser(staticPath) {
 	return function* staticParser(next) {
@@ -133,4 +135,17 @@ function defineWrapper(staticPath, options) {
 			ctx.body = yield requirejs(file, basePath, ctx.body);
 		}
 	};
+}
+
+
+function requirejsDefine(opts) {
+	function wrapper(file, encoding, cb) {
+		let fileName = file.path;
+		let code = requirejs.define(fileName, opts.basePath, file.contents.toString(encoding));
+		file.contents = new Buffer(code);
+		this.push(file);
+		setImmediate(cb);
+	}
+
+	return through.obj(wrapper);
 }
